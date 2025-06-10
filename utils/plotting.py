@@ -159,42 +159,42 @@ for (alpha, method), data in sorted(alpha_method_data.items()):
         f"V_g_est[s0] = {np.mean(data['eps_risk'][-ave_window:]):.4f}"
     )
 
-    fig, axs = plt.subplots(1, 1, figsize=(25, 8))
+    fig, axs = plt.subplots(1, 4, figsize=(25, 8))
 
     # 1. Reward subplot
-    # if "V_r_s0_tau" in data and "eps_rew" in data:
-    #     axs[0].plot(recent_avg(data["V_r_s0_tau"], ave_window), label=ylabel_map["V_r_s0_tau"])
-    #     axs[0].plot(recent_avg(data["eps_rew"], ave_window), '--', label=ylabel_map["eps_rew"])
+    if "V_r_s0_tau" in data and "eps_rew" in data:
+        axs[0].plot(recent_avg(data["V_r_s0_tau"], ave_window), label=ylabel_map["V_r_s0_tau"])
+        axs[0].plot(recent_avg(data["eps_rew"], ave_window), '--', label=ylabel_map["eps_rew"])
 
-    #     axs[0].set_title("Reward", fontsize=24)  
-    #     axs[0].legend(fontsize=20)              
-    #     axs[0].grid(True)
+        axs[0].set_title("Reward", fontsize=24)  
+        axs[0].legend(fontsize=20)              
+        axs[0].grid(True)
 
-    #     axs[0].tick_params(axis='both', which='major', labelsize=18)  # Increase tick label font size
-
-
-    # # 2. Risk subplot
-    # if "V_g_s0_tau" in data and "eps_risk" in data and "tau" in data:
-    #     adjusted_risk = data["V_g_s0_tau"] + data["tau"]
-    #     axs[1].plot(recent_avg(adjusted_risk, ave_window), label=ylabel_map["V_g_s0_tau"] + " + τ")
-    #     axs[1].plot(recent_avg(data["eps_risk"], ave_window), '--', label=ylabel_map["eps_risk"])
-
-    #     axs[1].set_title("Risk", fontsize=24)
-    #     axs[1].legend(fontsize=20)
-    #     axs[1].grid(True)
-
-    #     axs[1].tick_params(axis='both', which='major', labelsize=18)  # Increase tick label font size
+        axs[0].tick_params(axis='both', which='major', labelsize=18)  # Increase tick label font size
 
 
-    # # 3. Lambda subplot
-    # if "lambda_k" in data:
-    #     axs[2].plot(recent_avg(data["lambda_k"], ave_window), label=ylabel_map["lambda_k"], color='purple')
+    # 2. Risk subplot
+    if "V_g_s0_tau" in data and "eps_risk" in data and "tau" in data:
+        adjusted_risk = data["V_g_s0_tau"] + data["tau"]
+        axs[1].plot(recent_avg(adjusted_risk, ave_window), label=ylabel_map["V_g_s0_tau"] + " + τ")
+        axs[1].plot(recent_avg(data["eps_risk"], ave_window), '--', label=ylabel_map["eps_risk"])
 
-    #     axs[2].set_title("Dual Variable λ", fontsize=24)
-    #     axs[2].legend(fontsize=20)      
-    #     axs[2].grid(True)
+        axs[1].set_title("Risk", fontsize=24)
+        axs[1].legend(fontsize=20)
+        axs[1].grid(True)
 
-    #     axs[2].tick_params(axis='both', which='major', labelsize=18)  # Increase tick label font size
+        axs[1].tick_params(axis='both', which='major', labelsize=18)  # Increase tick label font size
+
+
+    # 3. Lambda subplot
+    if "lambda_k" in data:
+        axs[2].plot(recent_avg(data["lambda_k"], ave_window), label=ylabel_map["lambda_k"], color='purple')
+
+        axs[2].set_title("Dual Variable λ", fontsize=24)
+        axs[2].legend(fontsize=20)      
+        axs[2].grid(True)
+
+        axs[2].tick_params(axis='both', which='major', labelsize=18)  # Increase tick label font size
 
 
     # 4. Policy Heatmap subplot
@@ -236,9 +236,7 @@ for (alpha, method), data in sorted(alpha_method_data.items()):
                     policy_right[row][col] += count
 
         # Plot heatmap
-        # ax = axs[3]
-        ax = axs
-
+        ax = axs[3]
         cmap = plt.cm.Blues
         norm = Normalize(vmin=0, vmax=1)
 
@@ -310,20 +308,20 @@ for (alpha, method), data in sorted(alpha_method_data.items()):
         cbar = fig.colorbar(sm, cax=cax)
         cbar.set_label("Normalized Action Frequency", fontsize=20)
         cbar.ax.tick_params(labelsize=20)
-    # if "policy" in data:
-    #     fig.suptitle(f"α = {alpha:.3f}, {method.replace('_', ' ')}, Estiamted reward = {estimate_rew_tot/trials:3f},Estiamted risk = {estimate_risk_tot/trials:3f}", fontsize=24)
-    # else:
-    #     fig.suptitle(f"α = {alpha:.3f}, {method.replace('_', ' ')}", fontsize=24)
+    if "policy" in data:
+        fig.suptitle(f"α = {alpha:.3f}, {method.replace('_', ' ')}, Estiamted reward = {estimate_rew_tot/trials:3f},Estiamted risk = {estimate_risk_tot/trials:3f}", fontsize=24)
+    else:
+        fig.suptitle(f"α = {alpha:.3f}, {method.replace('_', ' ')}", fontsize=24)
 
-    # # Save figure
-    # safe_method = method.replace(" ", "_")
-    # fig_filename = f"alpha_{alpha:.3f}_{safe_method}.png"
-    # fig_path = os.path.join(output_dir, fig_filename)
-    # fig.tight_layout(rect=[0, 0, 0.95, 0.95])
-    # fig.savefig(fig_path, bbox_inches='tight')
-    # plt.close(fig)
-
-    # View Picture
+    # Save figure
     safe_method = method.replace(" ", "_")
-    fig.tight_layout(rect=[0, 0, 1, 0.93])
-    plt.show()
+    fig_filename = f"alpha_{alpha:.3f}_{safe_method}.png"
+    fig_path = os.path.join(output_dir, fig_filename)
+    fig.tight_layout(rect=[0, 0, 0.95, 0.95])
+    fig.savefig(fig_path, bbox_inches='tight')
+    plt.close(fig)
+
+    # # View Picture
+    # safe_method = method.replace(" ", "_")
+    # fig.tight_layout(rect=[0, 0, 1, 0.93])
+    # plt.show()
